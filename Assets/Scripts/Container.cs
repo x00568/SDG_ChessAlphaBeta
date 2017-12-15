@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Container : MonoBehaviour
 {
-    public Move move;
+    public  Move move;
     GameManager manager;
 
     void Start()
@@ -15,7 +15,7 @@ public class Container : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && move != null)
         {
-            manager.SwapPieces(move);
+           manager.SwapPieces(move);
         }
     }
 }

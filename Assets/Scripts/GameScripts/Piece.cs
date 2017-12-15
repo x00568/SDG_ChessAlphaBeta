@@ -23,7 +23,8 @@ public class Piece : MonoBehaviour
     public Sprite pieceImage = null;
     public Vector2 position;
     private Vector3 moveTo;
- 
+
+
     private bool _hasMoved = false;
     public bool HasMoved
     {
@@ -35,11 +36,13 @@ public class Piece : MonoBehaviour
     {
         moveTo = position;
     }
+
     void Start()
     {
         moveTo = this.transform.position;
         
     }
+
     void Update()
     {
         transform.position = Vector3.Lerp(this.transform.position, moveTo, 3 * Time.deltaTime);

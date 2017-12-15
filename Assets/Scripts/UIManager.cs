@@ -17,21 +17,22 @@ public class UIManager : MonoBehaviour
     void Update()
     {
 
-        if (gamemanger._kingDead)
-        {
-            winPanel.SetActive(true);
-            if (gamemanger.win)
+
+
+        if (gamemanger.BlackWin())
             {
+                winPanel.SetActive(true);
                 winText.text = " 黑方" + "WINNER!";
                 Time.timeScale = 0;
             }
-            else
+            if (gamemanger.WhiteWin())
             {
+                winPanel.SetActive(true);
                 winText.text = " 白方" + "WINNER!";
                 Time.timeScale = 0;
             }
-        }
-        if (gamemanger.playerTurn)
+      
+        if (gamemanger.WhoPlay())
         {
             turnText.text = "白方走";
         }
@@ -46,20 +47,17 @@ public class UIManager : MonoBehaviour
                 turnText.text = "黑方正在移动";
             }
         }
-        if (gamemanger.kingAttack)
-        {
-            if (gamemanger.whoWin)
+            if (gamemanger.BlackAttack())
             {
                 BKingText.text = "King Check";
             }
-            else
+             else
+                BKingText.text = " ";
+
+            if (gamemanger.WhiteAttack())
                 WKingText.text = "King Check";
-        }
-        else
-        {
-            BKingText.text = "";
-            WKingText.text = "";
-        }
+            else
+                WKingText.text = " ";
     }
 
     public void Back()

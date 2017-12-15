@@ -2,37 +2,41 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public enum DifficultyEnum
-{
-    simple = 2,
-    medium = 3,
-    difficult = 4
-}
 public class GameManager : MonoBehaviour
 {
-
-    List<Move> moveList = new List<Move>();
+    private static GameManager _instance = null;
+    public static GameManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new GameManager();
+            }
+            return _instance;
+        }
+    }
+    List<Move> _moveList = new List<Move>();
     AlphaBeta ab = new AlphaBeta();
     public bool _kingDead = false;
     public float timer = 0;
     Board _board;
-    public bool win;
-    public bool whoWin;
-    public bool kingAttack;
+    public bool _win;
+    public bool _whoAttack;
+    public bool _kingAttack;
+    public bool playerTurn = true;
     void Start()
     {
         _board = Board.Instance;
-        SetupBoard();
+        _board.SetupBoard();
     }
-    public void SetDifficult(DifficultyEnum diffi)
-    {
-        ab.maxDepth = (int)diffi;
-    }
+
     void Update()
     {
-
+       
         if (!playerTurn && timer < 3)
         {
+            Debug.Log(111);
             timer += Time.deltaTime;
         }
         else if (!playerTurn && timer >= 3)
@@ -43,11 +47,8 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public bool playerTurn = true;
-    public void SetupBoard()
-    {
-        _board.SetupBoard();
-    }
+
+
     void _DoAIMove(Move move)
     {
         Tile firstPosition = move.firstPosition;
@@ -58,9 +59,9 @@ public class GameManager : MonoBehaviour
 
             SwapPieces(move);
             if (secondPosition.CurrentPiece.Player == Piece.playerColor.BLACK)
-                win = true;
+                _win = true;
             else if (secondPosition.CurrentPiece.Player == Piece.playerColor.WHITE)
-                win = false;
+                _win = false;
             _kingDead = true;
         }
         else
@@ -68,7 +69,7 @@ public class GameManager : MonoBehaviour
             SwapPieces(move);
         }
     }
-    //选择棋子走动位置,并将棋子的移动记录在列表中以供悔棋使用
+
     public void SwapPieces(Move move)
     {
         GameObject[] objects = GameObject.FindGameObjectsWithTag("Highlight");
@@ -76,6 +77,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(o);
         }
+
         Tile firstTile = move.firstPosition;
         Tile secondTile = move.secondPosition;
 
@@ -87,12 +89,13 @@ public class GameManager : MonoBehaviour
             {
                 _kingDead = true;
                 if (secondTile.CurrentPiece.Player == Piece.playerColor.BLACK)
-                    win = true;
+                    _win = true;
                 else if (secondTile.CurrentPiece.Player == Piece.playerColor.WHITE)
-                    win = false;
+                    _win = false;
             }
 
             move.Killed = secondTile.CurrentPiece;
+            // Destroy(secondTile.CurrentPiece.gameObject);
             secondTile.CurrentPiece.gameObject.SetActive(false);
         }
 
@@ -101,27 +104,28 @@ public class GameManager : MonoBehaviour
         secondTile.CurrentPiece.position = secondTile.Position;
         secondTile.CurrentPiece.HasMoved = true;
 
-        moveList.Add(move);
-        kingAttack = MoveFactory.Instance.CheckKing();
-        if (kingAttack)
+        _moveList.Add(move);
+        _kingAttack = MoveFactory.Instance.CheckKing();
+        if (_kingAttack)
         {
             if (MoveFactory.Instance.checkColor)
             {
-                whoWin = true;
+                _whoAttack = true;
                 Debug.Log("黑方Check");
             }
             else
             {
-                whoWin = true;
+                _whoAttack = true;
                 Debug.Log("白方Check");
             }
         }
         playerTurn = !playerTurn;
     }
-   //悔棋
+
     public void ReturnChess()
     {
-        if (moveList.Count <= 0)
+
+        if (_moveList.Count <= 0)
             return;
 
         timer = 0;
@@ -131,8 +135,8 @@ public class GameManager : MonoBehaviour
             Destroy(o);
         }
 
-        Move tempMove = moveList[moveList.Count - 1];
-        moveList.RemoveAt(moveList.Count - 1);
+        Move tempMove = _moveList[_moveList.Count - 1];
+        _moveList.RemoveAt(_moveList.Count - 1);
 
         tempMove.secondPosition.CurrentPiece = null;
         if (tempMove.Killed != null)
@@ -157,50 +161,4 @@ public class GameManager : MonoBehaviour
                 tempMove.secondPosition.CurrentPiece.HasMoved = false;
         playerTurn = !playerTurn;
     }
-
-    //判断谁走棋
-    public bool WhoPlay()
-    {
-        return playerTurn;
-    }
-    //白棋赢
-    public bool WhiteWin()
-    {
-        if(_kingDead)
-        {
-            if (win == false)
-            return win;
-        }
-        return false;
-    }
-    //黑色赢
-    public bool BlackWin()
-    {
-        if (_kingDead)
-        {
-               return true;
-        }
-        return false;
-    }
-    //白色King受威胁
-    public bool WhiteAttack()
-    {
-        if (kingAttack)
-        {
-            if (MoveFactory.Instance.checkColor)
-                return true;
-        }
-        return false;
-    }
-    //黑色King受威胁
-    public bool BlackAttack()
-    {
-        if (kingAttack)
-        {
-            if (!MoveFactory.Instance.checkColor)
-                return true;
-        }
-        return false;
-    }
-
 }
