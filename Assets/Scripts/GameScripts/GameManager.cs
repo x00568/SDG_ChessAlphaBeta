@@ -26,9 +26,9 @@ public class GameManager : MonoBehaviour
         SetupBoard();
     }
     //难度设置
-    public void SetDifficult(DifficultyEnum diffi)
+    public int SetDifficult(DifficultyEnum diffi)
     {
-        ab.maxDepth = (int)diffi;
+        return (int)diffi;
     }
     void Update()
     {
