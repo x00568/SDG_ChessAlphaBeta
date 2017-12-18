@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public class AlphaBeta
 {
-    public int _maxDepth = SartGame.depthIndex;
+    public int maxDepth = SartGame.depthIndex;
 
     List<Move> _moves = new List<Move>();
     List<Tile> _tilesWithPieces = new List<Tile>();
     List<Tile> _blackPieces = new List<Tile>();
     List<Tile> _whitePieces = new List<Tile>();
-    Stack<Move> _moveStack = new Stack<Move>();
+    Stack<Move> moveStack = new Stack<Move>();
     Weights _weight = new Weights();
     Tile[,] _localBoard = new Tile[8, 8];
     int _whiteScore = 0;
@@ -21,38 +21,40 @@ public class AlphaBeta
 
     public Move GetMove()
     {
+
         _board = Board.Instance;
-        bestMove = CreateMove(_board.GetTileFromBoard(new Vector2(0, 0)), _board.GetTileFromBoard(new Vector2(0, 0)));
-        AB(_maxDepth, -100000000, 1000000000, true);
+        bestMove = _CreateMove(_board.GetTileFromBoard(new Vector2(0, 0)), _board.GetTileFromBoard(new Vector2(0, 0)));
+        AB(maxDepth, -100000000, 1000000000, true);
         return bestMove;
 
     }
+
     int AB(int depth, int alpha, int beta, bool max)
     {
-        GetBoardState();
+        _GetBoardState();
 
         if (depth == 0)
         {
-            return Evaluate();
+            return _Evaluate();
         }
         if (max)
         {
             int score = -10000000;
-            List<Move> allMoves = GetMoves(Piece.playerColor.BLACK);
+            List<Move> allMoves = _GetMoves(Piece.playerColor.BLACK);
             foreach (Move move in allMoves)
             {
-                _moveStack.Push(move);
+                moveStack.Push(move);
 
-                DoFakeMove(move.firstPosition, move.secondPosition);
+                _DoFakeMove(move.firstPosition, move.secondPosition);
 
                 score = AB(depth - 1, alpha, beta, false);
 
-                UndoFakeMove();
+                _UndoFakeMove();
 
                 if (score > alpha)
                 {
                     move.score = score;
-                    if (move.score > bestMove.score && depth == _maxDepth)
+                    if (move.score > bestMove.score && depth == maxDepth)
                     {
                         bestMove = move;
                     }
@@ -68,16 +70,16 @@ public class AlphaBeta
         else
         {
             int score = 10000000;
-            List<Move> allMoves = GetMoves(Piece.playerColor.WHITE);
+            List<Move> allMoves = _GetMoves(Piece.playerColor.WHITE);
             foreach (Move move in allMoves)
             {
-                _moveStack.Push(move);
+                moveStack.Push(move);
 
-                DoFakeMove(move.firstPosition, move.secondPosition);
+                _DoFakeMove(move.firstPosition, move.secondPosition);
 
                 score = AB(depth - 1, alpha, beta, true);
 
-                UndoFakeMove();
+                _UndoFakeMove();
 
                 if (score < beta)
                 {
@@ -92,9 +94,9 @@ public class AlphaBeta
             return beta;
         }
     }
-    public void UndoFakeMove()
+    public void _UndoFakeMove()
     {
-        Move tempMove = _moveStack.Pop();
+        Move tempMove = moveStack.Pop();
         Tile movedTo = tempMove.secondPosition;
         Tile movedFrom = tempMove.firstPosition;
         Piece pieceKilled = tempMove.pieceKilled;
@@ -112,13 +114,13 @@ public class AlphaBeta
         }
     }
 
-    void DoFakeMove(Tile currentTile, Tile targetTile)
+    void _DoFakeMove(Tile currentTile, Tile targetTile)
     {
         targetTile.SwapFakePieces(currentTile.CurrentPiece);
         currentTile.CurrentPiece = null;
     }
 
-    List<Move> GetMoves(Piece.playerColor color)
+    List<Move> _GetMoves(Piece.playerColor color)
     {
         List<Move> turnMove = new List<Move>();
         List<Tile> pieces = new List<Tile>();
@@ -134,15 +136,16 @@ public class AlphaBeta
 
             foreach (Move move in pieceMoves)
             {
-                Move newMove = CreateMove(move.firstPosition, move.secondPosition);
+                Move newMove = _CreateMove(move.firstPosition, move.secondPosition);
                 turnMove.Add(newMove);
             }
         }
         return turnMove;
     }
 
-    int Evaluate()
+    int _Evaluate()
     {
+        // Debug.Log(maxDepth + "---------");
         float pieceDifference = 0;
         float whiteWeight = 0;
         float blackWeight = 0;
@@ -159,7 +162,7 @@ public class AlphaBeta
         return Mathf.RoundToInt(pieceDifference * 100);
     }
 
-    void GetBoardState()
+    void _GetBoardState()
     {
         _blackPieces.Clear();
         _whitePieces.Clear();
@@ -193,7 +196,7 @@ public class AlphaBeta
         }
     }
 
-    Move CreateMove(Tile tile, Tile move)
+    Move _CreateMove(Tile tile, Tile move)
     {
         Move tempMove = new Move();
         tempMove.firstPosition = tile;

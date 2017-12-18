@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class MoveFactory
+public class MoveFactory 
 {
     private static MoveFactory instance;
     private MoveFactory() { }
@@ -19,8 +19,8 @@ public class MoveFactory
     }
 
     Board _board;
-    List<Move> _moves = new List<Move>();
-    Dictionary<Piece.pieceType, System.Action> _pieceToFunction = new Dictionary<Piece.pieceType, System.Action>();
+    List<Move> moves = new List<Move>();
+    Dictionary<Piece.pieceType, System.Action> pieceToFunction = new Dictionary<Piece.pieceType, System.Action>();
 
     private Piece _piece;
     private Piece.pieceType _type;
@@ -31,12 +31,12 @@ public class MoveFactory
     {
 
         _board = board;
-        _pieceToFunction.Add(Piece.pieceType.PAWN, GetPawnMoves);
-        _pieceToFunction.Add(Piece.pieceType.ROOK, GetRookMoves);
-        _pieceToFunction.Add(Piece.pieceType.KNIGHT, GetKnightMoves);
-        _pieceToFunction.Add(Piece.pieceType.BISHOP, GetBishopMoves);
-        _pieceToFunction.Add(Piece.pieceType.QUEEN, GetQueenMoves);
-        _pieceToFunction.Add(Piece.pieceType.KING, GetKingMoves);
+        pieceToFunction.Add(Piece.pieceType.PAWN, _GetPawnMoves);
+        pieceToFunction.Add(Piece.pieceType.ROOK, _GetRookMoves);
+        pieceToFunction.Add(Piece.pieceType.KNIGHT, _GetKnightMoves);
+        pieceToFunction.Add(Piece.pieceType.BISHOP, _GetBishopMoves);
+        pieceToFunction.Add(Piece.pieceType.QUEEN, _GetQueenMoves);
+        pieceToFunction.Add(Piece.pieceType.KING, _GetKingMoves);
     }
 
     public List<Move> GetMoves(Piece piece, Vector2 position)
@@ -46,7 +46,7 @@ public class MoveFactory
         _player = piece.Player;
         _position = position;
 
-        foreach (KeyValuePair<Piece.pieceType, System.Action> p in _pieceToFunction)
+        foreach (KeyValuePair<Piece.pieceType, System.Action> p in pieceToFunction)
         {
             if (_type == p.Key)
             {
@@ -54,106 +54,106 @@ public class MoveFactory
             }
         }
 
-        return _moves;
+        return moves;
     }
 
-   public void GetPawnMoves()
+   public void _GetPawnMoves()
     {
         if (_piece.Player == Piece.playerColor.BLACK)
         {
             int limit = _piece.HasMoved ? 2 : 3;
-            GenerateMove(limit, new Vector2(0, 1));
+            _GenerateMove(limit, new Vector2(0, 1));
 
             Vector2 diagLeft = new Vector2(_position.x - 1, _position.y + 1);
             Vector2 diagRight = new Vector2(_position.x + 1, _position.y + 1);
             Tile dl = null;
             Tile dr = null;
-            if (IsOnBoard(diagLeft))
+            if (_IsOnBoard(diagLeft))
             {
                 dl = _board.GetTileFromBoard(diagLeft);
             }
-            if (IsOnBoard(diagRight))
+            if (_IsOnBoard(diagRight))
             {
                 dr = _board.GetTileFromBoard(diagRight);
             }
 
-            if (dl != null && ContainsPiece(dl) && IsEnemy(dl))
+            if (dl != null && _ContainsPiece(dl) && _IsEnemy(dl))
             {
-                CheckAndStoreMove(diagLeft);
+                _CheckAndStoreMove(diagLeft);
             }
-            if (dr != null && ContainsPiece(dr) && IsEnemy(dr))
+            if (dr != null && _ContainsPiece(dr) && _IsEnemy(dr))
             {
-                CheckAndStoreMove(diagRight);
+                _CheckAndStoreMove(diagRight);
             }
         }
         else
         {
             int limit = _piece.HasMoved ? 2 : 3;
-            GenerateMove(limit, new Vector2(0, -1));
+            _GenerateMove(limit, new Vector2(0, -1));
 
             Vector2 diagLeft = new Vector2(_position.x - 1, _position.y - 1);
             Vector2 diagRight = new Vector2(_position.x + 1, _position.y - 1);
             Tile dl = null;
             Tile dr = null;
-            if (IsOnBoard(diagLeft))
+            if (_IsOnBoard(diagLeft))
             {
                 dl = _board.GetTileFromBoard(diagLeft);
             }
-            if (IsOnBoard(diagRight))
+            if (_IsOnBoard(diagRight))
             {
                 dr = _board.GetTileFromBoard(diagRight);
             }
 
-            if (dl != null && ContainsPiece(dl) && IsEnemy(dl))
+            if (dl != null && _ContainsPiece(dl) && _IsEnemy(dl))
             {
-                CheckAndStoreMove(diagLeft);
+                _CheckAndStoreMove(diagLeft);
             }
-            if (dr != null && ContainsPiece(dr) && IsEnemy(dr))
+            if (dr != null && _ContainsPiece(dr) && _IsEnemy(dr))
             {
-                CheckAndStoreMove(diagRight);
+                _CheckAndStoreMove(diagRight);
             }
         }
     }
 
-   public void GetRookMoves()
+   public void _GetRookMoves()
     {
-        GenerateMove(9, new Vector2(0, 1));
-        GenerateMove(9, new Vector2(0, -1));
-        GenerateMove(9, new Vector2(1, 0));
-        GenerateMove(9, new Vector2(-1, 0));
+        _GenerateMove(9, new Vector2(0, 1));
+        _GenerateMove(9, new Vector2(0, -1));
+        _GenerateMove(9, new Vector2(1, 0));
+        _GenerateMove(9, new Vector2(-1, 0));
     }
 
-   public void GetKnightMoves()
+   public void _GetKnightMoves()
     {
         Vector2 move;
         move = new Vector2(_position.x + 2, _position.y + 1);
-        CheckAndStoreMove(move);
+        _CheckAndStoreMove(move);
         move = new Vector2(_position.x + 2, _position.y - 1);
-        CheckAndStoreMove(move);
+        _CheckAndStoreMove(move);
         move = new Vector2(_position.x - 2, _position.y + 1);
-        CheckAndStoreMove(move);
+        _CheckAndStoreMove(move);
         move = new Vector2(_position.x - 2, _position.y - 1);
-        CheckAndStoreMove(move);
+        _CheckAndStoreMove(move);
 
         move = new Vector2(_position.x + 1, _position.y - 2);
-        CheckAndStoreMove(move);
+        _CheckAndStoreMove(move);
         move = new Vector2(_position.x + 1, _position.y + 2);
-        CheckAndStoreMove(move);
+        _CheckAndStoreMove(move);
         move = new Vector2(_position.x - 1, _position.y + 2);
-       CheckAndStoreMove(move);
+        _CheckAndStoreMove(move);
         move = new Vector2(_position.x - 1, _position.y - 2);
-        CheckAndStoreMove(move);
+        _CheckAndStoreMove(move);
     }
 
-   public void GetBishopMoves()
+   public void _GetBishopMoves()
     {
-        GenerateMove(9, new Vector2(1, 1));
-        GenerateMove(9, new Vector2(-1, -1));
-        GenerateMove(9, new Vector2(1, -1));
-        GenerateMove(9, new Vector2(-1, 1));
+        _GenerateMove(9, new Vector2(1, 1));
+        _GenerateMove(9, new Vector2(-1, -1));
+        _GenerateMove(9, new Vector2(1, -1));
+        _GenerateMove(9, new Vector2(-1, 1));
     }
 
-   public void GetKingMoves()
+   public void _GetKingMoves()
     {
         for (int x = -1; x <= 1; x++)
         {
@@ -162,37 +162,37 @@ public class MoveFactory
                 if (x == 0 && y == 0)
                     continue;
 
-                CheckAndStoreMove(new Vector2(_position.x + x, _position.y + y));
+                _CheckAndStoreMove(new Vector2(_position.x + x, _position.y + y));
             }
         }
     }
 
-   public void GetQueenMoves()
+   public void _GetQueenMoves()
     {
-        GetBishopMoves();
-        GetRookMoves();
+        _GetBishopMoves();
+        _GetRookMoves();
     }
 
-    void GenerateMove(int limit, Vector2 direction)
+    void _GenerateMove(int limit, Vector2 direction)
     {
         for (int i = 1; i < limit; i++)
         {
             Vector2 move = _position + direction * i;
-            if (IsOnBoard(move) && ContainsPiece(_board.GetTileFromBoard(move)))
+            if (_IsOnBoard(move) && _ContainsPiece(_board.GetTileFromBoard(move)))
             {
-                if (IsEnemy(_board.GetTileFromBoard(move)) && _type != Piece.pieceType.PAWN)
+                if (_IsEnemy(_board.GetTileFromBoard(move)) && _type != Piece.pieceType.PAWN)
                 {
-                    CheckAndStoreMove(move);
+                    _CheckAndStoreMove(move);
                 }
                 break;
             }
-            CheckAndStoreMove(move);
+            _CheckAndStoreMove(move);
         }
     }
 
-    void CheckAndStoreMove(Vector2 move)
+    void _CheckAndStoreMove(Vector2 move)
     {
-        if (IsOnBoard(move) && (!ContainsPiece(_board.GetTileFromBoard(move)) || IsEnemy(_board.GetTileFromBoard(move))))
+        if (_IsOnBoard(move) && (!_ContainsPiece(_board.GetTileFromBoard(move)) || _IsEnemy(_board.GetTileFromBoard(move))))
         {
             Move m = new Move();
             m.firstPosition = _board.GetTileFromBoard(_position);
@@ -201,11 +201,11 @@ public class MoveFactory
 
             if (m.secondPosition != null)
                 m.pieceKilled = m.secondPosition.CurrentPiece;
-            _moves.Add(m);
+            moves.Add(m);
         }
     }
 
-    bool IsEnemy(Tile tile)
+    bool _IsEnemy(Tile tile)
     {
         if (_player != tile.CurrentPiece.Player)
             return true;
@@ -213,9 +213,9 @@ public class MoveFactory
             return false;
     }
 
-    bool ContainsPiece(Tile tile)
+    bool _ContainsPiece(Tile tile)
     {
-        if (!IsOnBoard(tile.Position))
+        if (!_IsOnBoard(tile.Position))
             return false;
 
         if (tile.CurrentPiece != null)
@@ -224,7 +224,7 @@ public class MoveFactory
             return false;
     }
 
-    bool IsOnBoard(Vector2 point)
+    bool _IsOnBoard(Vector2 point)
     {
         if (point.x >= 0 && point.y >= 0 && point.x < 8 && point.y < 8)
             return true;
@@ -281,14 +281,14 @@ public class MoveFactory
         if (p.Player == Piece.playerColor.BLACK)
         {
             int limit = p.HasMoved ? 2 : 3;
-            LineMove(limit, new Vector2(0, 1), temp, c);
+            _LineMove(limit, new Vector2(0, 1), temp, c);
             Vector2 diagLeft = new Vector2(temp.x - 1, temp.y + 1);
             Vector2 diagRight = new Vector2(temp.x + 1, temp.y + 1);
-            if (IsOnBoard(diagLeft))
+            if (_IsOnBoard(diagLeft))
             {
                 CheckMove(diagLeft, c);
             }
-            if (IsOnBoard(diagRight))
+            if (_IsOnBoard(diagRight))
             {
                 CheckMove(diagRight, c);
             }
@@ -297,10 +297,10 @@ public class MoveFactory
 
     void RookMove(Piece.playerColor c, Vector2 temp, Piece p)
     {
-        LineMove(9, new Vector2(0, 1), temp, c);
-        LineMove(9, new Vector2(0, -1), temp, c);
-        LineMove(9, new Vector2(1, 0), temp, c);
-        LineMove(9, new Vector2(-1, 0), temp, c);
+        _LineMove(9, new Vector2(0, 1), temp, c);
+        _LineMove(9, new Vector2(0, -1), temp, c);
+        _LineMove(9, new Vector2(1, 0), temp, c);
+        _LineMove(9, new Vector2(-1, 0), temp, c);
     }
     void KnightMove(Piece.playerColor c, Vector2 temp, Piece p)
     {
@@ -325,10 +325,10 @@ public class MoveFactory
     }
     void BishopMove(Piece.playerColor c, Vector2 temp, Piece p)
     {
-        LineMove(9, new Vector2(1, 1), temp, c);
-        LineMove(9, new Vector2(-1, -1), temp, c);
-        LineMove(9, new Vector2(1, -1), temp, c);
-        LineMove(9, new Vector2(-1, 1), temp, c);
+        _LineMove(9, new Vector2(1, 1), temp, c);
+        _LineMove(9, new Vector2(-1, -1), temp, c);
+        _LineMove(9, new Vector2(1, -1), temp, c);
+        _LineMove(9, new Vector2(-1, 1), temp, c);
     }
     void KingMove(Piece.playerColor c, Vector2 temp, Piece p)
     {
@@ -350,12 +350,12 @@ public class MoveFactory
     }
 
     //直走路径
-    void LineMove(int limit, Vector2 direction, Vector2 tempPosition, Piece.playerColor co)
+    void _LineMove(int limit, Vector2 direction, Vector2 tempPosition, Piece.playerColor co)
     {
         for (int i = 1; i < limit; i++)
         {
             Vector2 move = tempPosition + direction * i;
-            if (IsOnBoard(move) && ContainsPiece(Board.Instance.GetTileFromBoard(move)))
+            if (_IsOnBoard(move) && _ContainsPiece(Board.Instance.GetTileFromBoard(move)))
             {
                 if (Board.Instance.GetTileFromBoard(tempPosition).CurrentPiece.Type != Piece.pieceType.PAWN)
                 {
@@ -371,7 +371,7 @@ public class MoveFactory
     //通用检查
     void CheckMove(Vector2 v, Piece.playerColor c)
     {
-        if (IsOnBoard(v) && ContainsPiece(Board.Instance.GetTileFromBoard(v)))
+        if (_IsOnBoard(v) && _ContainsPiece(Board.Instance.GetTileFromBoard(v)))
         {
             if (c != Board.Instance.GetTileFromBoard(v).CurrentPiece.Player)
             {
@@ -385,5 +385,81 @@ public class MoveFactory
                 }
             }
         }
+    }
+}
+public class Board
+{
+    private static Board _instance = null;
+    public static Board Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = new Board();
+            }
+            return _instance;
+        }
+    }
+
+    private Tile[,] _board = new Tile[8, 8];
+
+    public void SetupBoard()
+    {
+        for (int y = 0; y < 8; y++)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                _board[x, y] = new Tile(x, y);
+            }
+        }
+    }
+    public Tile GetTileFromBoard(Vector2 tile)
+    {
+        return _board[(int)tile.x, (int)tile.y];
+    }
+}
+public class Move
+{
+    public Tile firstPosition = null;
+    public Tile secondPosition = null;
+    public Piece pieceMoved = null;
+    public Piece pieceKilled = null;
+    public Piece Killed = null;
+    public int score = -100000000;
+}
+public class Tile
+{
+    private Vector2 _position = Vector2.zero;
+    public Vector2 Position
+    {
+        get { return _position; }
+    }
+
+    private Piece _currentPiece = null;
+    public Piece CurrentPiece
+    {
+        get { return _currentPiece; }
+        set { _currentPiece = value; }
+    }
+    Piece[] _piece;
+    public Tile(int x, int y)
+    {
+        _position.x = x;
+        _position.y = y;
+        _piece = GameObject.FindObjectsOfType<Piece>();
+        if (y == 0 || y == 1 || y == 6 || y == 7)
+        {
+            for (int i = 0; i < _piece.Length; i++)
+            {
+                if (_piece[i].position.x == x && _piece[i].position.y == y)
+                    _currentPiece = _piece[i];
+            }
+            // _currentPiece = GameObject.Find(x.ToString() + " " + y.ToString()).GetComponent<Piece>();
+        }
+    }
+    public void SwapFakePieces(Piece newPiece)
+    {
+        _currentPiece = newPiece;
     }
 }
